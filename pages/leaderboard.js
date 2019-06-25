@@ -62,7 +62,21 @@ class Leaderboard extends Component {
             .filter(player => player.level === level);
 
         // Sort by the number of moves before adding the rank
-        result.sort((a, b) => a['nbOfMoves'] - b['nbOfMoves'])
+        result.sort((a, b) => {
+            // *less number of moves is better
+            if (a['nbOfMoves'] < b['nbOfMoves'])
+                return -1; // Bring a before b
+            if (a['nbOfMoves'] > b['nbOfMoves'])
+                return 1; // Bring b before a
+            // If they are equal sort them by the time
+            if (a['nbOfMoves'] === b['nbOfMoves']) {
+                // Sort those differently depending on if the order is ascending
+                if (a['time'] < b['time'])
+                    return -1;
+                if (a['time'] > b['time'])
+                    return 1;
+            }
+        })
 
         // Add rank after everything is filtered, needs to be done
         // before sorting or searching otherwise the rank wouldn't be correct
@@ -172,8 +186,8 @@ class Leaderboard extends Component {
             </TableHead>
             <TableBody>
                 { // Map through the computed scores and display a table
-                    this.getScores().map(player => (
-                        <TableRow key={player.username}>
+                    this.getScores().map((player, index) => (
+                        <TableRow key={index}>
                             <TableCell component="th" scope="row">{player.rank}</TableCell>
                             <TableCell align="right">{player.username}</TableCell>
                             <TableCell align="right">{player.nbOfMoves}</TableCell>

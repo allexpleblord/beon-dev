@@ -1,12 +1,33 @@
 import Autosuggest from 'react-autosuggest';
 
 class AutoSuggestion extends React.Component {
+
+    // Removes the duplicate usernames
+    getProps = () => {
+        let players = this.props.players;
+        let seen = [];
+        
+        players = players.filter(player => {
+            // If player name has already been seen
+            if (seen.includes(player.username))
+                return false;
+                
+            // Else just push to the array to mark it as seen
+            seen.push(player.username);
+            // and return true
+            return true;
+        });
+
+        console.log(players)
+        return players;
+    }
+
     // Teach Autosuggest how to calculate suggestions for any given input value.
     getSuggestions = value => {
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
 
-        return inputLength === 0 ? [] : this.props.players.filter(player =>
+        return inputLength === 0 ? [] : this.state.original.filter(player =>
             player.username.toLowerCase().includes(inputValue)
         );
     };
@@ -30,7 +51,8 @@ class AutoSuggestion extends React.Component {
     // and they are initially empty because the Autosuggest is closed.
     state = {
         value: '',
-        suggestions: this.props.players
+        suggestions: this.props.players,
+        original: this.getProps()
     };
 
     onChange = (event, { newValue }) => {
